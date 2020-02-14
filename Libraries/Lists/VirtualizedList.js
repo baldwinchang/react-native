@@ -48,6 +48,7 @@ export type Separators = {
 export type RenderItemProps<ItemT> = {
   item: ItemT,
   index: number,
+  length: number,
   separators: Separators,
   ...
 };
@@ -904,6 +905,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           fillRateHelper={this._fillRateHelper}
           horizontal={horizontal}
           index={ii}
+          length={cells.length}
           inversionStyle={inversionStyle}
           item={item}
           key={key}
@@ -1932,6 +1934,8 @@ type CellRendererProps = {
   fillRateHelper: FillRateHelper,
   horizontal: ?boolean,
   index: number,
+  // enables a renderer to provide accessible spatial descriptors (n of N)
+  length: number,
   inversionStyle: ViewStyleProp,
   item: Item,
   // This is extracted by ScrollViewStickyHeader
@@ -2036,7 +2040,7 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
-  _renderElement(renderItem, ListItemComponent, item, index) {
+  _renderElement(renderItem, ListItemComponent, item, index, length) {
     if (renderItem && ListItemComponent) {
       console.warn(
         'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
@@ -2051,6 +2055,7 @@ class CellRenderer extends React.Component<
       return React.createElement(ListItemComponent, {
         item,
         index,
+        length,
         separators: this._separators,
       });
     }
@@ -2059,6 +2064,7 @@ class CellRenderer extends React.Component<
       return renderItem({
         item,
         index,
+        length,
         separators: this._separators,
       });
     }
@@ -2077,6 +2083,7 @@ class CellRenderer extends React.Component<
       horizontal,
       item,
       index,
+      length,
       inversionStyle,
       parentProps,
     } = this.props;
@@ -2086,6 +2093,7 @@ class CellRenderer extends React.Component<
       ListItemComponent,
       item,
       index,
+      length,
     );
 
     const onLayout =
